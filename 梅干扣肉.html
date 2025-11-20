@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>梅干扣肉 - 美味大冒險</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap');
+
+        :root {
+            --primary: #D9534F; /* 豬肉紅 */
+            --secondary: #F0AD4E; /* 金黃炸皮 */
+            --accent: #5CB85C; /* 梅干菜綠 */
+            --bg: #FFF8E1; /* 米紙色 */
+            --text: #5D4037; /* 醬油色 */
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: #fff;
+            width: 100%;
+            max-width: 600px;
+            border-radius: 20px;
+            box-shadow: 8px 8px 0px var(--text);
+            border: 4px solid var(--text);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background-color: var(--primary);
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--text);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2em;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        /* 進度條 */
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+        .dot {
+            width: 15px;
+            height: 15px;
+            background: #ddd;
+            border-radius: 50%;
+            border: 2px solid var(--text);
+        }
+        .dot.active {
+            background: var(--secondary);
+        }
+
+        /* 步驟卡片 */
+        .step-card {
+            display: none;
+            text-align: center;
+            animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .step-card.active {
+            display: block;
+        }
+
+        .step-icon {
+            font-size: 80px;
+            margin-bottom: 10px;
+            display: inline-block;
+            filter: drop-shadow(4px 4px 0px rgba(0,0,0,0.2));
+        }
+
+        .step-title {
+            font-size: 1.5em;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .step-desc {
+            font-size: 1.1em;
+            line-height: 1.6;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px dashed var(--text);
+            text-align: left;
+        }
+
+        .ingredient-list {
+            text-align: left;
+            list-style: none;
+            padding: 0;
+        }
+        .ingredient-list li {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .ingredient-list li::before {
+            content: '🍖';
+            margin-right: 10px;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        button {
+            background-color: var(--secondary);
+            border: 3px solid var(--text);
+            border-radius: 50px;
+            padding: 10px 30px;
+            font-size: 1.2em;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            color: var(--text);
+            box-shadow: 4px 4px 0px var(--text);
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--text);
+        }
+
+        .ps-note {
+            background: #FFF3CD;
+            color: #856404;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            margin-top: 15px;
+            border: 2px solid #FFEEBA;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🥘 梅干扣肉</h1>
+    </div>
+
+    <div class="content">
+        <!-- 進度點 -->
+        <div class="progress-bar">
+            <div class="dot active" id="dot0"></div>
+            <div class="dot" id="dot1"></div>
+            <div class="dot" id="dot2"></div>
+            <div class="dot" id="dot3"></div>
+            <div class="dot" id="dot4"></div>
+        </div>
+
+        <!-- 步驟 0: 食材 -->
+        <div class="step-card active" id="step0">
+            <div class="step-icon">🛒</div>
+            <div class="step-title">準備食材</div>
+            <div class="step-desc">
+                <ul class="ingredient-list">
+                    <li><strong>豬五花肉：</strong>約 1200g (切寬條)</li>
+                    <li><strong>梅干菜 (乾)：</strong>80g</li>
+                    <li><strong>辛香料：</strong>大蒜 10丁、薑片 7-8片</li>
+                    <li><strong>醬料：</strong>醬油(0.5杯)、蠔油(1匙)、米酒(0.5杯)、味霖(3匙)</li>
+                    <li><strong>水：</strong>3米杯</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 步驟 1: 梅干菜 -->
+        <div class="step-card" id="step1">
+            <div class="step-icon">🥬</div>
+            <div class="step-title">步驟 1：處理梅干</div>
+            <div class="step-desc">
+                <p>梅干菜需要先<strong>泡水約 20 分鐘</strong>。</p>
+                <p>💡 記得中間要換水把沙子洗掉喔！</p>
+                <p>洗淨後瀝乾，切碎備用。</p>
+            </div>
+        </div>
+
+        <!-- 步驟 2: 豬肉 -->
+        <div class="step-card" id="step2">
+            <div class="step-icon">🥩</div>
+            <div class="step-title">步驟 2：煎香豬肉</div>
+            <div class="step-desc">
+                <p>1. 豬肉川燙後，用紙巾吸乾水份。</p>
+                <p>2. 起油鍋（不用放油！），肉下鍋煎。</p>
+                <p>3. 將<strong>三面煎至金黃色</strong>。</p>
+                <p>4. 煎好後夾起放入悶鍋內。</p>
+            </div>
+        </div>
+
+        <!-- 步驟 3: 炒料 -->
+        <div class="step-card" id="step3">
+            <div class="step-icon">🔥</div>
+            <div class="step-title">步驟 3：精華炒料</div>
+            <div class="step-desc">
+                <p>1. 原鍋放入<strong>薑、蒜</strong>（可加辣椒）爆香。</p>
+                <p>2. 加入梅干菜炒乾、炒出香氣。</p>
+                <p>3. 加入所有調味料（醬油、酒、味霖）翻炒。</p>
+                <p>4. 全部倒入悶鍋。原鍋加3杯水搖晃（洗鍋精華）也倒入悶鍋。</p>
+            </div>
+        </div>
+
+        <!-- 步驟 4: 悶煮 -->
+        <div class="step-card" id="step4">
+            <div class="step-icon">🍲</div>
+            <div class="step-title">步驟 4：耐心悶煮</div>
+            <div class="step-desc">
+                <p>設定時間 <strong>60 分鐘</strong>。</p>
+                <p>時間到後打開翻面，試試味道，再煮 3 分鐘即可！</p>
+                <div class="ps-note">
+                    📝 PS: 聽到悶鍋發出響聲時，記得轉小火喔！
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <button onclick="nextStep()" id="btnAction">開始料理！ ➤</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentStep = 0;
+    const totalSteps = 5;
+
+    function nextStep() {
+        // 隱藏當前步驟
+        document.getElementById(`step${currentStep}`).classList.remove('active');
+        
+        currentStep++;
+        
+        // 如果最後一步，重置
+        if (currentStep >= totalSteps) {
+            currentStep = 0;
+            document.getElementById('btnAction').innerText = "開始料理！ ➤";
+            // 重置點點
+            for(let i=1; i<totalSteps; i++) {
+                document.getElementById(`dot${i}`).classList.remove('active');
+            }
+        } else {
+            if (currentStep === totalSteps - 1) {
+                document.getElementById('btnAction').innerText = "完成重來 ↻";
+            } else {
+                document.getElementById('btnAction').innerText = "下一步 ➤";
+            }
+            // 更新點點
+            document.getElementById(`dot${currentStep}`).classList.add('active');
+        }
+
+        // 顯示新步驟
+        document.getElementById(`step${currentStep}`).classList.add('active');
+    }
+</script>
+
+</body>
+</html>
