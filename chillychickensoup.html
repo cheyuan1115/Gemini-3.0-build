@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>剝皮辣椒雞湯 - 美味大冒險</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap');
+
+        :root {
+            --primary: #388E3C; /* 剝皮辣椒綠 */
+            --secondary: #FBC02D; /* 雞湯金黃 */
+            --accent: #FF5722; /* 枸杞/熱度紅 */
+            --bg: #F1F8E9; /* 淺綠背景 */
+            --text: #33691E; /* 深綠字 */
+            --card-bg: #fff;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: radial-gradient(#DCEDC8 2px, transparent 2px);
+            background-size: 20px 20px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 550px;
+            border-radius: 25px;
+            box-shadow: 0 10px 25px rgba(51, 105, 30, 0.15);
+            border: 5px solid var(--primary);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background-color: var(--primary);
+            color: #fff;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+            border-bottom: 5px solid #2E7D32;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.8em;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+        }
+
+        .badge {
+            background: var(--secondary);
+            color: #000;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .content {
+            padding: 30px 20px 20px 20px;
+        }
+
+        /* 進度條 */
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding: 0 20px;
+        }
+        .dot {
+            width: 14px;
+            height: 14px;
+            background: #C5E1A5;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .dot.active {
+            background: var(--secondary);
+            transform: scale(1.4);
+            box-shadow: 0 0 8px var(--secondary);
+        }
+
+        /* 步驟卡片 */
+        .step-card {
+            display: none;
+            text-align: center;
+            animation: slideIn 0.5s ease;
+        }
+        .step-card.active {
+            display: block;
+        }
+
+        .icon-box {
+            font-size: 80px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 0 #ddd);
+        }
+
+        .step-title {
+            font-size: 1.5em;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .step-desc {
+            font-size: 1.1em;
+            line-height: 1.8;
+            background: #F9FBE7;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: left;
+            border: 2px dashed #AED581;
+        }
+
+        .ingredient-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            text-align: left;
+            font-size: 0.95em;
+        }
+        .ing-item {
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tip {
+            background: #FFF3E0;
+            color: #E65100;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .highlight {
+            color: #C62828;
+            font-weight: bold;
+            background: rgba(255, 235, 59, 0.3);
+            padding: 0 4px;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 40px;
+            font-size: 1.2em;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #1B5E20;
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #1B5E20;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🌶️ 剝皮辣椒雞湯</h1>
+        <div class="badge">甘甜微辣</div>
+    </div>
+
+    <div class="content">
+        <!-- 進度點 -->
+        <div class="progress-bar">
+            <div class="dot active" id="dot0"></div>
+            <div class="dot" id="dot1"></div>
+            <div class="dot" id="dot2"></div>
+            <div class="dot" id="dot3"></div>
+        </div>
+
+        <!-- 步驟 0: 食材 -->
+        <div class="step-card active" id="step0">
+            <div class="icon-box">🥣</div>
+            <div class="step-title">準備食材</div>
+            <div class="step-desc">
+                <div class="ingredient-grid">
+                    <div class="ing-item">🐔 雞肉切塊</div>
+                    <div class="ing-item">🌶️ 剝皮辣椒 (罐頭)</div>
+                    <div class="ing-item">🐚 蛤蠣 (吐沙)</div>
+                    <div class="ing-item">🥒 <strong>蔭瓜</strong> (甘甜秘方)</div>
+                    <div class="ing-item">🍄 香菇 (乾)</div>
+                    <div class="ing-item">🐚 干貝 (乾)</div>
+                    <div class="ing-item">🧄 蒜頭、薑、蔥</div>
+                </div>
+                <div class="tip">💡 記得：香菇要先提前泡水喔！</div>
+            </div>
+        </div>
+
+        <!-- 步驟 1: 川燙 -->
+        <div class="step-card" id="step1">
+            <div class="icon-box">🚿</div>
+            <div class="step-title">步驟 1：川燙去腥</div>
+            <div class="step-desc">
+                <p>1. 準備一鍋<strong>冷水</strong>，將雞肉放入。</p>
+                <p>2. 放入 <strong>蔥、薑</strong>。</p>
+                <p>3. 開火煮至沸騰。</p>
+                <p>4. 取出雞肉，用冷水沖洗乾淨。</p>
+            </div>
+        </div>
+
+        <!-- 步驟 2: 燉煮 -->
+        <div class="step-card" id="step2">
+            <div class="icon-box">🍲</div>
+            <div class="step-title">步驟 2：快鍋燉湯</div>
+            <div class="step-desc">
+                <p>將雞肉放入快鍋，加入：</p>
+                <ul>
+                    <li>清水</li>
+                    <li><strong>蛤蠣湯汁</strong> (若有，需過濾浮油)</li>
+                    <li><span class="highlight">剝皮辣椒的「湯汁」</span> (辣椒先別放!)</li>
+                    <li>蒜頭、蔭瓜、香菇、干貝</li>
+                </ul>
+                <p>蓋上鍋蓋，悶煮 <strong>10 分鐘</strong>。</p>
+            </div>
+        </div>
+
+        <!-- 步驟 3: 完成 -->
+        <div class="step-card" id="step3">
+            <div class="icon-box">😋</div>
+            <div class="step-title">步驟 3：合體上桌</div>
+            <div class="step-desc">
+                <p>快鍋洩壓開蓋後：</p>
+                <p>1. 放入 <span class="highlight">剝皮辣椒本人</span>。</p>
+                <p>2. 放入 <strong>蛤蠣</strong>。</p>
+                <p>3. 煮至蛤蠣打開。</p>
+                <p>試試味道，如果不夠味，可以再加一點罐頭湯汁或鹽巴。完成！</p>
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <button onclick="nextStep()" id="btnAction">開始料理！ ➤</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentStep = 0;
+    const totalSteps = 4;
+
+    function nextStep() {
+        document.getElementById(`step${currentStep}`).classList.remove('active');
+        
+        currentStep++;
+        
+        if (currentStep >= totalSteps) {
+            currentStep = 0;
+            document.getElementById('btnAction').innerText = "開始料理！ ➤";
+            // Reset dots
+            for(let i=1; i<totalSteps; i++) document.getElementById(`dot${i}`).classList.remove('active');
+        } else {
+            if (currentStep === totalSteps - 1) {
+                document.getElementById('btnAction').innerText = "暖暖上桌 ↻";
+            } else {
+                document.getElementById('btnAction').innerText = "下一步 ➤";
+            }
+            // Activate dot
+            document.getElementById(`dot${currentStep}`).classList.add('active');
+        }
+
+        document.getElementById(`step${currentStep}`).classList.add('active');
+    }
+</script>
+
+</body>
+</html>

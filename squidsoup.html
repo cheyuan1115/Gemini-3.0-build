@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>經典魷魚螺肉蒜 - 美味大冒險</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap');
+
+        :root {
+            --primary: #D32F2F; /* 辦桌紅 */
+            --secondary: #388E3C; /* 蒜苗綠 */
+            --accent: #FFECB3; /* 湯頭金黃 */
+            --bg: #FFF8E1; /* 米色背景 */
+            --text: #4E342E; /* 深褐字 */
+            --card-bg: #fff;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            /* 復古格子桌布效果 */
+            background-image: 
+                linear-gradient(90deg, rgba(200,0,0,.05) 50%, transparent 50%),
+                linear-gradient(rgba(200,0,0,.05) 50%, transparent 50%);
+            background-size: 40px 40px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 550px;
+            border-radius: 20px;
+            box-shadow: 8px 8px 0px var(--primary);
+            border: 4px solid var(--text);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background-color: var(--primary);
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--text);
+            position: relative;
+        }
+        
+        .header::before {
+            content: "🍲";
+            font-size: 2em;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.8em;
+            letter-spacing: 2px;
+        }
+
+        .tag {
+            background: #FFC107;
+            color: #000;
+            font-size: 0.8em;
+            padding: 3px 8px;
+            border-radius: 10px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-weight: bold;
+            transform: rotate(10deg);
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        /* 進度條 */
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding: 0 15px;
+        }
+        .dot {
+            width: 15px;
+            height: 15px;
+            background: #ddd;
+            border-radius: 50%;
+            border: 2px solid var(--text);
+            transition: 0.3s;
+        }
+        .dot.active {
+            background: var(--secondary);
+            transform: scale(1.3);
+        }
+
+        /* 步驟卡片 */
+        .step-card {
+            display: none;
+            text-align: center;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .step-card.active {
+            display: block;
+        }
+
+        .main-icon {
+            font-size: 80px;
+            margin-bottom: 15px;
+            display: inline-block;
+            filter: drop-shadow(3px 3px 0px rgba(0,0,0,0.2));
+        }
+
+        .step-title {
+            font-size: 1.5em;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-weight: bold;
+            border-bottom: 3px dashed #ddd;
+            padding-bottom: 10px;
+        }
+
+        .step-desc {
+            font-size: 1.1em;
+            line-height: 1.8;
+            background: #FFFDE7;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: left;
+            border: 2px solid #FFE082;
+        }
+
+        .ingredient-list {
+            text-align: left;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.95em;
+        }
+        .ing-item {
+            background: #f9f9f9;
+            padding: 5px 10px;
+            border-radius: 5px;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .tip-box {
+            background: #E3F2FD;
+            border: 2px solid #90CAF9;
+            color: #1565C0;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            text-align: left;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        button {
+            background-color: var(--secondary);
+            color: #fff;
+            border: 3px solid var(--text);
+            border-radius: 50px;
+            padding: 10px 40px;
+            font-size: 1.2em;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px var(--text);
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--text);
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <span class="tag">快鍋版</span>
+        <h1>魷魚螺肉蒜</h1>
+    </div>
+
+    <div class="content">
+        <!-- 進度 -->
+        <div class="progress-bar">
+            <div class="dot active" id="dot0"></div>
+            <div class="dot" id="dot1"></div>
+            <div class="dot" id="dot2"></div>
+            <div class="dot" id="dot3"></div>
+            <div class="dot" id="dot4"></div>
+        </div>
+
+        <!-- 步驟 0: 食材 -->
+        <div class="step-card active" id="step0">
+            <div class="main-icon">🦑</div>
+            <div class="step-title">酒家菜備料</div>
+            <div class="step-desc">
+                <div class="ingredient-list">
+                    <div class="ing-item">🦑 乾魷魚 2尾</div>
+                    <div class="ing-item">🥫 螺肉罐頭 1罐</div>
+                    <div class="ing-item">🥓 三層肉 (適量)</div>
+                    <div class="ing-item">🎍 竹筍 1支</div>
+                    <div class="ing-item">🍄 香菇 2朵</div>
+                    <div class="ing-item">🧄 蒜苗、薑片</div>
+                    <div class="ing-item">🐚 蛤蠣 8-9顆</div>
+                    <div class="ing-item">🦐 蝦皮 (隨意)</div>
+                </div>
+                <p style="margin-top:10px; font-size:0.9em; color:#666;">
+                    *乾魷魚記得切段泡水；竹筍切片。
+                </p>
+            </div>
+        </div>
+
+        <!-- 步驟 1: 爆香 -->
+        <div class="step-card" id="step1">
+            <div class="main-icon">🔥</div>
+            <div class="step-title">Step 1：爆炒香氣</div>
+            <div class="step-desc">
+                <p>1. 下 <strong>三層肉</strong> 煸炒至出油。</p>
+                <p>2. 加入 <strong>乾魷魚、蝦皮、香菇</strong>。</p>
+                <p>3. 轉中小火慢慢炒，直到聞到濃濃的海鮮乾貨香味。</p>
+            </div>
+        </div>
+
+        <!-- 步驟 2: 湯底 -->
+        <div class="step-card" id="step2">
+            <div class="main-icon">🥫</div>
+            <div class="step-title">Step 2：靈魂湯頭</div>
+            <div class="step-desc">
+                <p>1. 加水入鍋。</p>
+                <p>2. 倒入 <strong>螺肉罐頭的湯汁</strong>。</p>
+                <p>3. 放入竹筍片。</p>
+                <div class="tip-box">
+                    💡 <strong>甜度秘訣：</strong><br>
+                    如果罐頭湯汁太甜，加半罐就好；<br>若味道淡，就整罐加下去！
+                </div>
+            </div>
+        </div>
+
+        <!-- 步驟 3: 悶煮 -->
+        <div class="step-card" id="step3">
+            <div class="main-icon">⏰</div>
+            <div class="step-title">Step 3：快鍋悶煮</div>
+            <div class="step-desc">
+                <p>這一步使用<strong>快鍋 (壓力鍋)</strong> 讓食材迅速軟爛入味。</p>
+                <p>蓋上鍋蓋，設定 <strong>15 分鐘</strong>。</p>
+                <p>(如果用一般鍋具，可能需要燉煮 40 分鐘以上喔！)</p>
+            </div>
+        </div>
+
+        <!-- 步驟 4: 完成 -->
+        <div class="step-card" id="step4">
+            <div class="main-icon">🍲</div>
+            <div class="step-title">Step 4：鮮味提昇</div>
+            <div class="step-desc">
+                <p>洩壓開蓋後...</p>
+                <p>1. 放入 <strong>蛤蠣</strong> 與 <strong>蒜苗</strong>。</p>
+                <p>2. 放入 <strong>螺肉</strong> (不想煮太硬現在放)。</p>
+                <p>3. 續煮 <strong>3 分鐘</strong>，試一下味道，鮮甜的魷魚螺肉蒜就完成啦！😋</p>
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <button onclick="nextStep()" id="btnAction">開始料理！ ➤</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentStep = 0;
+    const totalSteps = 5;
+
+    function nextStep() {
+        document.getElementById(`step${currentStep}`).classList.remove('active');
+        
+        currentStep++;
+        
+        if (currentStep >= totalSteps) {
+            currentStep = 0;
+            document.getElementById('btnAction').innerText = "開始料理！ ➤";
+            // Reset dots
+            for(let i=1; i<totalSteps; i++) document.getElementById(`dot${i}`).classList.remove('active');
+        } else {
+            if (currentStep === totalSteps - 1) {
+                document.getElementById('btnAction').innerText = "好料上桌 ↻";
+            } else {
+                document.getElementById('btnAction').innerText = "下一步 ➤";
+            }
+            // Activate dot
+            document.getElementById(`dot${currentStep}`).classList.add('active');
+        }
+
+        document.getElementById(`step${currentStep}`).classList.add('active');
+    }
+</script>
+
+</body>
+</html>
