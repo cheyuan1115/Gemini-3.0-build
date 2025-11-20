@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>特級廚師大接單 - 美味大冒險</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;900&display=swap');
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background-color: #FFF3E0;
+            color: #4E342E;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none; /* 防止連點選取文字 */
+        }
+
+        /* --- 遊戲頂部資訊 --- */
+        .game-header {
+            padding: 15px;
+            background: #FF7043;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #D84315;
+            z-index: 10;
+        }
+
+        .lives { color: #FFEBEE; }
+        .score { color: #FFF; font-size: 1.4em; }
+
+        /* --- 客人點餐區 (螢幕上半部) --- */
+        .order-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-image: radial-gradient(#FFE0B2 2px, transparent 2px);
+            background-size: 20px 20px;
+            position: relative;
+        }
+
+        .bubble {
+            background: white;
+            border: 5px solid #4E342E;
+            border-radius: 30px;
+            padding: 20px 40px;
+            text-align: center;
+            position: relative;
+            box-shadow: 10px 10px 0 rgba(0,0,0,0.1);
+            animation: float 3s ease-in-out infinite;
+            max-width: 80%;
+        }
+        
+        /* 對話框箭頭 */
+        .bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 20px 20px 0;
+            border-style: solid;
+            border-color: #4E342E transparent transparent transparent;
+        }
+
+        .order-text {
+            font-size: 1.2em;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .order-dish {
+            font-size: 2em;
+            font-weight: 900;
+            color: #D84315;
+            margin: 0;
+        }
+
+        /* 時間條 */
+        .timer-bar-container {
+            width: 80%;
+            height: 10px;
+            background: #ddd;
+            border-radius: 10px;
+            margin-top: 30px;
+            overflow: hidden;
+            border: 2px solid #4E342E;
+        }
+        
+        .timer-bar {
+            height: 100%;
+            background: #FF5722;
+            width: 100%;
+            transition: width 0.1s linear;
+        }
+
+        /* --- 廚房操作區 (螢幕下半部) --- */
+        .kitchen-area {
+            background: white;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 兩欄 */
+            gap: 15px;
+            border-top: 5px solid #4E342E;
+            height: 45vh;
+            overflow-y: auto;
+        }
+
+        .dish-btn {
+            background: #f9f9f9;
+            border: 3px solid #eee;
+            border-radius: 15px;
+            padding: 10px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s, background 0.2s;
+            position: relative;
+        }
+
+        .dish-btn:active {
+            transform: scale(0.95);
+            background: #eee;
+        }
+
+        .dish-icon { font-size: 2.5em; margin-bottom: 5px; }
+        .dish-name { font-size: 1em; font-weight: bold; color: #555; text-align: center; }
+
+        /* --- 各種料理顏色 --- */
+        .btn-pork { border-color: #D32F2F; background: #FFEBEE; }
+        .btn-curry { border-color: #F57F17; background: #FFF8E1; }
+        .btn-soup { border-color: #388E3C; background: #E8F5E9; }
+        .btn-beef { border-color: #722F37; background: #EFEBE9; }
+
+        /* --- 遊戲狀態圖層 --- */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: white;
+            text-align: center;
+        }
+
+        .hidden { display: none; }
+
+        .overlay h1 { font-size: 3em; margin-bottom: 10px; color: #FFAB91; }
+        .overlay p { font-size: 1.5em; margin-bottom: 30px; }
+        
+        .start-btn {
+            background: #FF7043;
+            color: white;
+            border: 4px solid white;
+            padding: 15px 50px;
+            font-size: 1.5em;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+        }
+
+        .home-link {
+            margin-top: 20px;
+            color: #aaa;
+            text-decoration: none;
+            border-bottom: 1px dashed #aaa;
+        }
+
+        /* 動畫 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+            100% { transform: translateX(0); }
+        }
+        .shake-anim { animation: shake 0.3s; }
+
+    </style>
+</head>
+<body>
+
+    <!-- 頂部 -->
+    <div class="game-header">
+        <div class="lives">❤️❤️❤️</div>
+        <div class="score">Score: 0</div>
+    </div>
+
+    <!-- 訂單區 -->
+    <div class="order-area" id="orderArea">
+        <div class="bubble">
+            <div class="order-text">老闆！我要一份...</div>
+            <div class="order-dish" id="currentOrderName">準備中...</div>
+        </div>
+        <div class="timer-bar-container">
+            <div class="timer-bar" id="timerBar"></div>
+        </div>
+    </div>
+
+    <!-- 按鈕區 -->
+    <div class="kitchen-area" id="kitchenGrid">
+        <!-- JS 會自動產生按鈕 -->
+    </div>
+
+    <!-- 開始畫面 -->
+    <div class="overlay" id="startScreen">
+        <h1>👨‍🍳 特級廚師<br>大接單</h1>
+        <p>客人點什麼，你就煮什麼！<br>別讓客人等太久！</p>
+        <button class="start-btn" onclick="startGame()">開始接單</button>
+        <a href="index.html" class="home-link">回到食譜總表</a>
+    </div>
+
+    <!-- 結束畫面 -->
+    <div class="overlay hidden" id="gameOverScreen">
+        <h1>😭 餐廳倒閉</h1>
+        <p>最終得分: <span id="finalScore">0</span></p>
+        <button class="start-btn" onclick="startGame()">再挑戰一次</button>
+        <a href="index.html" class="home-link" style="margin-top: 30px; color: white; font-size: 1.2em;">📖 去複習食譜</a>
+    </div>
+
+    <script>
+        // === 1. 遊戲資料 (來自您的食譜) ===
+        const recipes = [
+            { id: 'meigan', name: '梅干扣肉', icon: '🥘', type: 'btn-pork' },
+            { id: 'curry', name: '特製咖哩', icon: '🍛', type: 'btn-curry' },
+            { id: '3layer', name: '甜麵醬滷肉', icon: '🍖', type: 'btn-pork' },
+            { id: 'thai', name: '泰式打拋豬', icon: '🌿', type: 'btn-pork' },
+            { id: 'beef', name: '紅酒燉牛肉', icon: '🍷', type: 'btn-beef' },
+            { id: 'squid', name: '魷魚螺肉蒜', icon: '🦑', type: 'btn-soup' },
+            { id: 'chili', name: '剝皮辣椒雞', icon: '🌶️', type: 'btn-soup' }
+        ];
+
+        // === 2. 變數設定 ===
+        let score = 0;
+        let lives = 3;
+        let currentTarget = null;
+        let maxTime = 3000; // 初始 3秒
+        let timeLeft = maxTime;
+        let gameInterval;
+        let timerInterval;
+        let isPlaying = false;
+
+        // === 3. 初始化廚房按鈕 ===
+        const kitchenGrid = document.getElementById('kitchenGrid');
+        
+        // 為了增加難度，每次開始可以稍微隨機排序按鈕 (這裡先固定方便記憶，或可選隨機)
+        recipes.forEach(recipe => {
+            const btn = document.createElement('div');
+            btn.className = `dish-btn ${recipe.type}`;
+            btn.innerHTML = `
+                <span class="dish-icon">${recipe.icon}</span>
+                <span class="dish-name">${recipe.name}</span>
+            `;
+            btn.onclick = () => checkAnswer(recipe.id);
+            kitchenGrid.appendChild(btn);
+        });
+
+        // === 4. 遊戲邏輯 ===
+
+        function startGame() {
+            // 重置數據
+            score = 0;
+            lives = 3;
+            maxTime = 3000; // 毫秒
+            updateUI();
+            
+            // 切換畫面
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameOverScreen').classList.add('hidden');
+            
+            isPlaying = true;
+            nextRound();
+        }
+
+        function nextRound() {
+            if (!isPlaying) return;
+
+            // 隨著分數增加，時間越來越短 (最快 1秒)
+            if (score > 5) maxTime = 2500;
+            if (score > 10) maxTime = 2000;
+            if (score > 20) maxTime = 1500;
+            if (score > 30) maxTime = 1000;
+
+            timeLeft = maxTime;
+            
+            // 隨機選一道菜
+            const randomIndex = Math.floor(Math.random() * recipes.length);
+            currentTarget = recipes[randomIndex];
+
+            // 顯示訂單
+            document.getElementById('currentOrderName').innerText = currentTarget.name;
+
+            // 開始計時
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft -= 20; // 每 20ms 扣一次
+                
+                // 更新時間條寬度
+                const percentage = (timeLeft / maxTime) * 100;
+                document.getElementById('timerBar').style.width = percentage + '%';
+
+                // 時間條顏色變化
+                if (percentage < 30) document.getElementById('timerBar').style.backgroundColor = '#C62828';
+                else document.getElementById('timerBar').style.backgroundColor = '#FF5722';
+
+                if (timeLeft <= 0) {
+                    handleWrong("timeout");
+                }
+            }, 20);
+        }
+
+        function checkAnswer(id) {
+            if (!isPlaying) return;
+
+            if (id === currentTarget.id) {
+                // 答對了
+                score++;
+                updateUI();
+                // 播放音效或特效可在此加
+                nextRound();
+            } else {
+                // 按錯了
+                handleWrong("wrong");
+            }
+        }
+
+        function handleWrong(reason) {
+            clearInterval(timerInterval);
+            lives--;
+            updateUI();
+
+            // 畫面震動特效
+            const orderArea = document.getElementById('orderArea');
+            orderArea.classList.add('shake-anim');
+            setTimeout(() => orderArea.classList.remove('shake-anim'), 300);
+
+            if (lives <= 0) {
+                gameOver();
+            } else {
+                // 稍微暫停一下再下一題，讓玩家意識到扣血
+                setTimeout(nextRound, 500);
+            }
+        }
+
+        function updateUI() {
+            document.querySelector('.score').innerText = `Score: ${score}`;
+            let lifeStr = "";
+            for(let i=0; i<lives; i++) lifeStr += "❤️";
+            document.querySelector('.lives').innerText = lifeStr;
+        }
+
+        function gameOver() {
+            isPlaying = false;
+            clearInterval(timerInterval);
+            document.getElementById('finalScore').innerText = score;
+            document.getElementById('gameOverScreen').classList.remove('hidden');
+        }
+
+    </script>
+</body>
+</html>
