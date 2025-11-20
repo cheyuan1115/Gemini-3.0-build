@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泰式打拋豬 - 美味大冒險</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap');
+
+        :root {
+            --primary: #2E7D32; /* 九層塔綠 */
+            --secondary: #C62828; /* 辣椒紅 */
+            --accent: #FBC02D; /* 檸檬黃 */
+            --bg: #FAFAFA; /* 乾淨背景 */
+            --text: #37474F; /* 深灰字 */
+            --card-bg: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: radial-gradient(#E0E0E0 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            overflow: hidden;
+            position: relative;
+            border-top: 10px solid var(--primary);
+        }
+
+        .header {
+            background-color: #fff;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px dashed #eee;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2em;
+            color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        /* 進度條 */
+        .steps-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            background: #ddd;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .step-dot.active {
+            background: var(--primary);
+            transform: scale(1.4);
+        }
+
+        /* 步驟卡片 */
+        .step-card {
+            display: none;
+            text-align: center;
+            animation: fadeScale 0.4s ease-out;
+            min-height: 300px;
+        }
+        .step-card.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .emoji-icon {
+            font-size: 80px;
+            margin-bottom: 15px;
+            display: block;
+            animation: shake 3s infinite;
+        }
+
+        .step-title {
+            font-size: 1.4em;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-weight: bold;
+            background: #FFEBEE;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .step-desc {
+            font-size: 1.1em;
+            line-height: 1.8;
+            text-align: left;
+            width: 100%;
+            background: #F1F8E9;
+            padding: 15px;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+
+        .ingredient-list {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+            text-align: left;
+        }
+        .ingredient-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        .sauce-box {
+            background: #FFF3E0;
+            border: 2px solid #FFE0B2;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 20px;
+            padding-bottom: 10px;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 40px;
+            font-size: 1.2em;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(46, 125, 50, 0.4);
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .highlight {
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        @keyframes fadeScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🌿 打拋豬肉</h1>
+    </div>
+
+    <div class="content">
+        <!-- 進度點 -->
+        <div class="steps-indicator">
+            <div class="step-dot active" id="dot0"></div>
+            <div class="step-dot" id="dot1"></div>
+            <div class="step-dot" id="dot2"></div>
+            <div class="step-dot" id="dot3"></div>
+            <div class="step-dot" id="dot4"></div>
+        </div>
+
+        <!-- 步驟 0: 食材 -->
+        <div class="step-card active" id="step0">
+            <div class="emoji-icon">🛒</div>
+            <div class="step-title">準備食材</div>
+            <div class="step-desc">
+                <ul class="ingredient-list">
+                    <li><span>🐖 豬絞肉</span> <span>120g</span></li>
+                    <li><span>🧄 蒜末、薑末</span> <span>各1大匙</span></li>
+                    <li><span>🍃 九層塔</span> <span>一把</span></li>
+                    <li><span>🍋 檸檬</span> <span>1/4顆</span></li>
+                </ul>
+                <div class="sauce-box">
+                    <strong>🥣 靈魂醬汁 (先調好)：</strong><br>
+                    打拋醬(1大匙)、魚露(1大匙)、味霖(1.5小匙)、老抽(少許)、蠔油(少許)。
+                </div>
+            </div>
+        </div>
+
+        <!-- 步驟 1: 爆香 -->
+        <div class="step-card" id="step1">
+            <div class="emoji-icon">🔥</div>
+            <div class="step-title">步驟 1：爆香炒肉</div>
+            <div class="step-desc">
+                <p>1. 熱鍋，將 <strong>薑末、蒜末</strong> 下鍋爆出香味。</p>
+                <p>2. 放入 <strong>豬絞肉</strong>。</p>
+                <p>⚠️ <strong>關鍵：</strong>一定要把肉的水分炒乾！炒到肉呈現金黃色、有點焦焦的香氣 (Maillard reaction) 才會好吃。</p>
+            </div>
+        </div>
+
+        <!-- 步驟 2: 下醬汁 -->
+        <div class="step-card" id="step2">
+            <div class="emoji-icon">🍯</div>
+            <div class="step-title">步驟 2：醬汁入味</div>
+            <div class="step-desc">
+                <p>肉炒香後...</p>
+                <p>倒入剛剛那一碗 <span class="highlight">預先調好的醬汁</span>。</p>
+                <p>大火翻炒，讓每一粒肉都裹上醬色和鹹香。</p>
+            </div>
+        </div>
+
+        <!-- 步驟 3: 九層塔 -->
+        <div class="step-card" id="step3">
+            <div class="emoji-icon">🍃</div>
+            <div class="step-title">步驟 3：塔香爆發</div>
+            <div class="step-desc">
+                <p>確認醬汁稍微收乾後。</p>
+                <p>豪邁地抓一把 <strong>九層塔</strong> 丟下去！</p>
+                <p>快速翻炒個幾下，看到葉子變軟就可以準備熄火了。</p>
+            </div>
+        </div>
+
+        <!-- 步驟 4: 檸檬 -->
+        <div class="step-card" id="step4">
+            <div class="emoji-icon">🍋</div>
+            <div class="step-title">步驟 4：點睛之筆</div>
+            <div class="step-desc">
+                <p>起鍋前（或盛盤後）。</p>
+                <p>擠入 <strong>1/4 顆檸檬汁</strong>。</p>
+                <p>酸味會讓整體油膩感消失，瞬間變成道地泰式風味！白飯準備好了嗎？🍚</p>
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <button onclick="nextStep()" id="btnAction">開始料理！ ➤</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentStep = 0;
+    const totalSteps = 5;
+
+    function nextStep() {
+        document.getElementById(`step${currentStep}`).classList.remove('active');
+        
+        currentStep++;
+        
+        if (currentStep >= totalSteps) {
+            currentStep = 0;
+            document.getElementById('btnAction').innerText = "開始料理！ ➤";
+            // Reset dots
+            for(let i=1; i<totalSteps; i++) document.getElementById(`dot${i}`).classList.remove('active');
+        } else {
+            if (currentStep === totalSteps - 1) {
+                document.getElementById('btnAction').innerText = "再來一碗 ↻";
+            } else {
+                document.getElementById('btnAction').innerText = "下一步 ➤";
+            }
+            // Activate dot
+            document.getElementById(`dot${currentStep}`).classList.add('active');
+        }
+
+        document.getElementById(`step${currentStep}`).classList.add('active');
+    }
+</script>
+
+</body>
+</html>
