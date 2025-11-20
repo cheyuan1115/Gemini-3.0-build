@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>廚房保衛戰 - 美味大冒險</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;900&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #FFF3E0;
+            font-family: 'Zen Maru Gothic', sans-serif;
+            overflow: hidden; /* 防止捲動 */
+            touch-action: none; /* 防止手機觸控時拖曳畫面 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* 遊戲畫布 */
+        canvas {
+            background: #FFF8E1;
+            background-image: radial-gradient(#FFCCBC 2px, transparent 2px);
+            background-size: 30px 30px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            max-width: 100%;
+            max-height: 80vh; /* 留空間給手機按鈕 */
+            border-bottom: 5px solid #4E342E;
+        }
+
+        /* 介面層 (分數、開始畫面) */
+        .ui-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; /* 讓點擊穿透到 Canvas */
+            display: flex;
+            justify-content: center;
+        }
+
+        .score-board {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #4E342E;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 2px solid #4E342E;
+        }
+
+        /* 開始/結束畫面 */
+        .modal {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            border: 4px solid #4E342E;
+            box-shadow: 0 10px 0 rgba(0,0,0,0.1);
+            pointer-events: auto; /* 這裡要可以點 */
+            min-width: 280px;
+        }
+
+        .modal h1 { margin: 0 0 10px 0; color: #D84315; }
+        .modal p { color: #666; margin-bottom: 20px; }
+        
+        .btn {
+            background: #FF7043;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            box-shadow: 0 5px 0 #BF360C;
+            transition: transform 0.1s;
+        }
+        .btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #BF360C; }
+
+        .hidden { display: none !important; }
+
+        /* 手機控制器 */
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 20px;
+            box-sizing: border-box;
+            pointer-events: auto;
+        }
+
+        .ctrl-btn {
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.5);
+            border: 3px solid #4E342E;
+            border-radius: 50%;
+            font-size: 2em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            color: #4E342E;
+        }
+        
+        .ctrl-btn:active { background: rgba(255, 112, 67, 0.5); }
+        .fire-btn { width: 90px; height: 90px; background: rgba(255, 112, 67, 0.2); border-color: #D84315; color: #D84315;}
+
+        /* 電腦版隱藏手機按鈕 */
+        @media (min-width: 768px) {
+            .controls { display: none; }
+            canvas { max-height: 95vh; border: 4px solid #4E342E; border-radius: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <div class="ui-layer">
+        <div class="score-board">Score: <span id="scoreDisplay">0</span></div>
+
+        <!-- 開始畫面 -->
+        <div id="startScreen" class="modal">
+            <h1>🍴 廚房保衛戰</h1>
+            <p>食材大軍來襲！<br>用叉子把它們變成料理！</p>
+            <p style="font-size: 0.9em; color: #888;">電腦：左右鍵移動 + 空白鍵射擊<br>手機：使用下方按鈕</p>
+            <button class="btn" onclick="startGame()">開始料理</button>
+            <br><br>
+            <a href="index.html" style="color:#888; text-decoration:none; font-size:0.9em;">🏠 回食譜首頁</a>
+        </div>
+
+        <!-- 結束畫面 -->
+        <div id="gameOverScreen" class="modal hidden">
+            <h1>😱 廚房失守</h1>
+            <p>最終得分: <span id="finalScore">0</span></p>
+            <button class="btn" onclick="startGame()">再試一次</button>
+            <br><br>
+            <a href="index.html" style="color:#888; text-decoration:none; font-size:0.9em;">🏠 回食譜首頁</a>
+        </div>
+    </div>
+
+    <!-- 手機控制區 -->
+    <div class="controls">
+        <div class="ctrl-btn" id="btnLeft">⬅️</div>
+        <div class="ctrl-btn fire-btn" id="btnFire">🍴</div>
+        <div class="ctrl-btn" id="btnRight">➡️</div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 設定畫布大小
+        function resize() {
+            canvas.width = window.innerWidth > 600 ? 600 : window.innerWidth;
+            canvas.height = window.innerHeight > 800 ? 800 : window.innerHeight;
+            if(window.innerWidth > 768) {
+                // 電腦版高度稍微留邊
+                canvas.height = window.innerHeight - 40;
+            }
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // 遊戲參數
+        let gameLoopId;
+        let score = 0;
+        let isGameOver = false;
+        let frameCount = 0;
+        let spawnRate = 60; // 幾幀生一個敵人
+
+        // 實體列表
+        const player = { x: 0, y: 0, width: 50, height: 50, speed: 7, dx: 0 };
+        let bullets = [];
+        let enemies = [];
+        let particles = [];
+
+        // 食材貼圖 (Emoji)
+        const enemyTypes = ['🐔', '🐷', '🦑', '🧅', '🥩', '🥬', '🌶️'];
+
+        // 輸入狀態
+        const keys = { ArrowLeft: false, ArrowRight: false, Space: false };
+
+        // === 遊戲邏輯 ===
+
+        function init() {
+            player.x = canvas.width / 2 - player.width / 2;
+            player.y = canvas.height - 80;
+            bullets = [];
+            enemies = [];
+            particles = [];
+            score = 0;
+            spawnRate = 60;
+            frameCount = 0;
+            isGameOver = false;
+            document.getElementById('scoreDisplay').innerText = 0;
+        }
+
+        function startGame() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameOverScreen').classList.add('hidden');
+            init();
+            gameLoop();
+        }
+
+        function gameOver() {
+            isGameOver = true;
+            cancelAnimationFrame(gameLoopId);
+            document.getElementById('finalScore').innerText = score;
+            document.getElementById('gameOverScreen').classList.remove('hidden');
+        }
+
+        function spawnEnemy() {
+            const size = 40;
+            const x = Math.random() * (canvas.width - size);
+            const type = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+            // 隨分數增加難度 (速度變快)
+            const speed = 2 + (score / 20); 
+            enemies.push({ x, y: -size, width: size, height: size, type, speed });
+        }
+
+        function spawnParticles(x, y, color) {
+            for(let i=0; i<8; i++) {
+                particles.push({
+                    x, y,
+                    vx: (Math.random() - 0.5) * 5,
+                    vy: (Math.random() - 0.5) * 5,
+                    life: 1.0,
+                    color: color
+                });
+            }
+        }
+
+        function update() {
+            frameCount++;
+
+            // 1. 玩家移動
+            if (keys.ArrowLeft || keys.LeftBtn) player.x -= player.speed;
+            if (keys.ArrowRight || keys.RightBtn) player.x += player.speed;
+
+            // 邊界檢查
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+
+            // 2. 發射子彈 (電腦按空白鍵，手機按按鈕)
+            if ((keys.Space || keys.FireBtn) && frameCount % 10 === 0) {
+                bullets.push({ x: player.x + player.width/2 - 10, y: player.y, width: 20, height: 20, speed: 10 });
+            }
+
+            // 3. 更新子彈
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                let b = bullets[i];
+                b.y -= b.speed;
+                if (b.y < -50) bullets.splice(i, 1);
+            }
+
+            // 4. 更新敵人
+            // 難度曲線：分數越高，生成越快
+            if (score > 20) spawnRate = 50;
+            if (score > 50) spawnRate = 40;
+            if (score > 100) spawnRate = 30;
+
+            if (frameCount % spawnRate === 0) spawnEnemy();
+
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                let e = enemies[i];
+                e.y += e.speed;
+
+                // 撞到底部 -> 遊戲結束
+                if (e.y > canvas.height) {
+                    gameOver();
+                    return;
+                }
+
+                // 撞到玩家 -> 遊戲結束
+                if (rectIntersect(player, e)) {
+                    gameOver();
+                    return;
+                }
+
+                // 被子彈打到
+                for (let j = bullets.length - 1; j >= 0; j--) {
+                    let b = bullets[j];
+                    if (rectIntersect(b, e)) {
+                        // 擊中！
+                        score++;
+                        document.getElementById('scoreDisplay').innerText = score;
+                        spawnParticles(e.x + e.width/2, e.y + e.height/2, '#FF7043');
+                        
+                        enemies.splice(i, 1);
+                        bullets.splice(j, 1);
+                        break; // 子彈消失，跳出子彈迴圈
+                    }
+                }
+            }
+
+            // 5. 更新粒子效果
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life -= 0.05;
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+        }
+
+        function draw() {
+            // 清空畫布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 畫玩家 (大廚)
+            ctx.font = "40px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "top";
+            ctx.fillText("👨‍🍳", player.x + player.width/2, player.y);
+
+            // 畫子彈 (叉子)
+            for (let b of bullets) {
+                ctx.font = "20px Arial";
+                ctx.fillText("🍴", b.x + b.width/2, b.y);
+            }
+
+            // 畫敵人 (食材)
+            for (let e of enemies) {
+                ctx.font = "35px Arial";
+                ctx.fillText(e.type, e.x + e.width/2, e.y);
+            }
+
+            // 畫粒子
+            for (let p of particles) {
+                ctx.globalAlpha = p.life;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1.0;
+            }
+        }
+
+        function gameLoop() {
+            if (isGameOver) return;
+            update();
+            draw();
+            gameLoopId = requestAnimationFrame(gameLoop);
+        }
+
+        // 碰撞檢測工具
+        function rectIntersect(r1, r2) {
+            return !(r2.x > r1.x + r1.width || 
+                     r2.x + r2.width < r1.x || 
+                     r2.y > r1.y + r1.height || 
+                     r2.y + r2.height < r1.y);
+        }
+
+        // === 事件監聽 (電腦鍵盤) ===
+        window.addEventListener('keydown', e => {
+            if (e.code === 'ArrowLeft') keys.ArrowLeft = true;
+            if (e.code === 'ArrowRight') keys.ArrowRight = true;
+            if (e.code === 'Space') keys.Space = true;
+        });
+        window.addEventListener('keyup', e => {
+            if (e.code === 'ArrowLeft') keys.ArrowLeft = false;
+            if (e.code === 'ArrowRight') keys.ArrowRight = false;
+            if (e.code === 'Space') keys.Space = false;
+        });
+
+        // === 事件監聽 (手機觸控) ===
+        const btnLeft = document.getElementById('btnLeft');
+        const btnRight = document.getElementById('btnRight');
+        const btnFire = document.getElementById('btnFire');
+
+        const addTouch = (elem, keyName) => {
+            elem.addEventListener('touchstart', (e) => { e.preventDefault(); keys[keyName] = true; });
+            elem.addEventListener('touchend', (e) => { e.preventDefault(); keys[keyName] = false; });
+            elem.addEventListener('mousedown', (e) => { keys[keyName] = true; }); // 讓電腦也能點按鈕測試
+            elem.addEventListener('mouseup', (e) => { keys[keyName] = false; });
+        };
+
+        addTouch(btnLeft, 'LeftBtn');
+        addTouch(btnRight, 'RightBtn');
+        addTouch(btnFire, 'FireBtn');
+
+        // 初始畫面渲染
+        resize();
+        draw();
+        
+        // 畫一個初始的大廚
+        ctx.font = "40px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("👨‍🍳", canvas.width/2, canvas.height - 80);
+
+    </script>
+</body>
+</html>
