@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍛 魔法地瓜泥咖哩 🍛</title>
+    
+    <!-- 引入可愛的圓體字型 (跟西洋棋網站一樣) -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* 保持跟西洋棋網站一樣的配色，建立系列感 */
+            --primary: #FF9A9E;       /* 粉紅 */
+            --secondary: #FECFEF;     /* 淺粉 */
+            --accent: #A18CD1;        /* 紫色 */
+            --bg-gradient: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+            --text: #555;
+            --card-bg: #ffffff;
+            --checked: #a8e6cf;       /* 打勾後的綠色 */
+        }
+
+        body {
+            font-family: 'Fredoka', 'Microsoft JhengHei', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        /* 標題區 */
+        header {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px 20px;
+            border-bottom: 8px solid var(--primary);
+            border-radius: 0 0 50px 50px;
+            box-shadow: 0 5px 15px rgba(161, 140, 209, 0.3);
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--accent);
+            font-size: 2.5em;
+            margin: 0;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 0px #fff;
+        }
+
+        p.subtitle {
+            font-size: 1.2em;
+            color: #777;
+            margin-top: 10px;
+        }
+
+        /* 標題分隔線 */
+        .section-title {
+            font-size: 2em;
+            margin: 50px 0 30px;
+            color: #fff;
+            text-shadow: 2px 2px 0px var(--accent);
+            font-weight: bold;
+        }
+
+        /* 容器 */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            padding: 0 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* 食材卡片 (可點擊) */
+        .card {
+            background: var(--card-bg);
+            border-radius: 25px;
+            width: 260px;
+            padding: 25px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+            border: 4px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer; /* 讓滑鼠變手手 */
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            border-color: var(--primary);
+        }
+
+        /* 點擊後的樣式 */
+        .card.checked {
+            background-color: #f0fff4;
+            border-color: #55efc4;
+            opacity: 0.7;
+        }
+        .card.checked::after {
+            content: '✔';
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 2em;
+            color: #55efc4;
+        }
+
+        .icon {
+            font-size: 70px;
+            margin-bottom: 15px;
+            filter: drop-shadow(3px 3px 0px rgba(0,0,0,0.1));
+        }
+
+        .item-name {
+            font-size: 1.5em;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .item-qty {
+            font-size: 1.1em;
+            color: #666;
+            background: #f0f0f0;
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+
+        .item-desc {
+            font-size: 0.95em;
+            line-height: 1.5;
+            color: #888;
+        }
+
+        /* 步驟區塊 (長條形) */
+        .step-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 30px;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 800px;
+            text-align: left;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 10px solid var(--accent);
+            position: relative;
+        }
+
+        .step-num {
+            position: absolute;
+            left: -25px;
+            top: 20px;
+            background: var(--accent);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .step-content h3 {
+            margin: 0 0 10px 20px;
+            color: var(--accent);
+            font-size: 1.5em;
+        }
+
+        .step-content p {
+            margin: 0 0 0 20px;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: bold;
+            background: #fff0f0;
+            padding: 2px 8px;
+            border-radius: 5px;
+        }
+
+        /* 計時器按鈕 */
+        .timer-box {
+            margin-top: 15px;
+            margin-left: 20px;
+            background: #eee;
+            padding: 15px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Fredoka', sans-serif;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0px #e58a8e;
+        }
+
+        .btn:hover {
+            background-color: #ff8085;
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0px #e58a8e;
+        }
+
+        .timer-display {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--text);
+            margin-left: 15px;
+            vertical-align: middle;
+        }
+
+        /* 秘訣區 */
+        .secret-tip {
+            background: #fffdf0;
+            border: 2px dashed var(--accent);
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 15px;
+            color: #bfa34e;
+            font-weight: bold;
+        }
+
+        footer {
+            padding: 40px;
+            color: #fff;
+            font-size: 0.9em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🍛 萌萌特製濃郁咖哩</h1>
+    <p class="subtitle">地瓜泥 + 可可粉 = 魔法般的美味！✨</p>
+</header>
+
+<!-- 食材區 -->
+<div class="section-title">🛒 點擊檢查食材 🛒</div>
+<p style="color:white; margin-bottom:30px;">(點擊卡片可以打勾喔！)</p>
+
+<div class="container">
+    <!-- 肉類 -->
+    <div class="card" onclick="toggleCheck(this)">
+        <div class="icon">🐷</div>
+        <div class="item-name">梅花豬肉</div>
+        <div class="item-qty">2 ~ 3 斤</div>
+        <div class="item-desc">切成塊狀，稍微帶點油花最好吃！</div>
+    </div>
+
+    <!-- 蔬菜 -->
+    <div class="card" onclick="toggleCheck(this)">
+        <div class="icon">🧅</div>
+        <div class="item-name">蔬菜夥伴</div>
+        <div class="item-qty">洋蔥 x2, 紅白蘿蔔</div>
+        <div class="item-desc">洋蔥切塊、紅蘿蔔 1 條、白蘿蔔 1.5 條。</div>
+    </div>
+
+    <!-- 靈魂主角 -->
+    <div class="card" onclick="toggleCheck(this)">
+        <div class="icon">🍠</div>
+        <div class="item-name">大地瓜</div>
+        <div class="item-qty">1 大條</div>
+        <div class="item-desc">這是<span class="highlight">濃郁的秘密</span>！用來代替馬鈴薯。</div>
+    </div>
+
+    <!-- 調味魔法 -->
+    <div class="card" onclick="toggleCheck(this)">
+        <div class="icon">🍫</div>
+        <div class="item-name">秘密香料</div>
+        <div class="item-qty">咖哩塊, 可可粉</div>
+        <div class="item-desc">還有素香菇鹽、奶油、巴西里香粉。</div>
+    </div>
+</div>
+
+<!-- 步驟區 -->
+<div class="section-title">👩‍🍳 開始料理囉！ 👨‍🍳</div>
+
+<!-- 步驟 1 -->
+<div class="step-card">
+    <div class="step-num">1</div>
+    <div class="step-content">
+        <h3>炒香底料</h3>
+        <p>準備一個大鍋子，把<span class="highlight">洋蔥</span>和<span class="highlight">梅花豬</span>一起丟進去。<br>
+        大火快炒，直到洋蔥變軟、肉肉表面變色，香味飄出來！</p>
+    </div>
+</div>
+
+<!-- 步驟 2 -->
+<div class="step-card">
+    <div class="step-num">2</div>
+    <div class="step-content">
+        <h3>製作黃金地瓜泥 (關鍵！)</h3>
+        <p>加水蓋過食材，蓋上鍋蓋悶煮。<br>
+        等地瓜煮軟後，先把它<span class="highlight">撈出來</span> (小心燙喔)。<br>
+        放入果汁機，打成綿密的<span class="highlight">地瓜泥</span>備用。</p>
+        <div class="secret-tip">💡 小撇步：這會讓咖哩湯頭變得超～級～濃郁香甜！</div>
+    </div>
+</div>
+
+<!-- 步驟 3 -->
+<div class="step-card">
+    <div class="step-num">3</div>
+    <div class="step-content">
+        <h3>燉煮蔬菜</h3>
+        <p>把紅蘿蔔、白蘿蔔放入鍋中，蓋上鍋蓋繼續燉煮。<br>
+        需要煮大約 20 分鐘，讓蘿蔔變軟。</p>
+        
+        <!-- 互動計時器 -->
+        <div class="timer-box">
+            <button class="btn" onclick="startTimer(this)">⏰ 開始計時 20 分鐘</button>
+            <span class="timer-display">20:00</span>
+        </div>
+    </div>
+</div>
+
+<!-- 步驟 4 -->
+<div class="step-card">
+    <div class="step-num">4</div>
+    <div class="step-content">
+        <h3>施展調味魔法</h3>
+        <p>開蓋！現在要加入所有魔法材料了：<br>
+        1. 放入 <span class="highlight">咖哩塊</span> (約3塊，依口味調整)。<br>
+        2. 倒入剛剛打好的 <span class="highlight">地瓜泥</span>。<br>
+        3. 加入一大匙 <span class="highlight">素香菇鹽</span>。<br>
+        4. 撒入秘密武器 <span class="highlight">可可粉 (1包)</span>！<br>
+        5. 撒一點巴西里香粉。</p>
+    </div>
+</div>
+
+<!-- 步驟 5 -->
+<div class="step-card">
+    <div class="step-num">5</div>
+    <div class="step-content">
+        <h3>奶油收尾</h3>
+        <p>全部攪拌均勻，確認咖哩塊都融化了。<br>
+        最後放入一小塊 <span class="highlight">奶油</span> 增加香氣。<br>
+        完成！準備白飯開動囉！🍚🥢</p>
+    </div>
+</div>
+
+<footer>
+    Based on Mommy's Handwritten Recipe ❤️ <br>
+    Made with Cute Style HTML
+</footer>
+
+<!-- 簡單的 JavaScript 互動 -->
+<script>
+    // 1. 食材打勾功能
+    function toggleCheck(element) {
+        element.classList.toggle('checked');
+    }
+
+    // 2. 計時器功能
+    var countdown;
+    
+    function startTimer(btn) {
+        // 如果已經在跑，就不重複按
+        if(btn.innerText.includes("計時中")) return;
+
+        var display = btn.nextElementSibling;
+        var duration = 20 * 60; // 20分鐘轉換成秒數 (測試時可改成 5秒: var duration = 5;)
+        
+        btn.innerText = "🔥 努力燉煮計時中...";
+        btn.style.backgroundColor = "#ccc"; // 按鈕變灰
+        btn.style.cursor = "default";
+
+        countdown = setInterval(function () {
+            var minutes = parseInt(duration / 60, 10);
+            var seconds = parseInt(duration % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = minutes + ":" + seconds;
+
+            if (--duration < 0) {
+                clearInterval(countdown);
+                display.textContent = "00:00";
+                btn.innerText = "⏰ 完成！該放咖哩塊囉！";
+                btn.style.backgroundColor = "#A18CD1"; // 變紫色提醒
+                btn.style.boxShadow = "0 4px 0px #7a6aa3";
+                alert("嗶嗶嗶！20分鐘到囉！蘿蔔應該煮軟了！🥕");
+            }
+        }, 1000);
+    }
+</script>
+
+</body>
+</html>
