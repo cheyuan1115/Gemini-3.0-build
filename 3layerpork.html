@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>秘製甜麵醬滷肉 - 美味大冒險</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap');
+
+        :root {
+            --primary: #795548; /* 滷汁棕 */
+            --secondary: #FFB300; /* 金黃炸色 */
+            --accent: #D32F2F; /* 辣椒紅 */
+            --bg: #EFEBE9; /* 淺灰褐 */
+            --text: #3E2723; /* 深咖啡字 */
+            --card-bg: #fff;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 20px;
+            box-shadow: 6px 6px 0px #4E342E;
+            border: 4px solid #4E342E;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background-color: var(--primary);
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 4px solid #4E342E;
+            position: relative;
+        }
+        
+        .header::after {
+            content: "🍖";
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5em;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        /* 進度條 */
+        .progress-container {
+            margin-bottom: 25px;
+            padding: 0 10px;
+        }
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+        .progress-bg {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #D7CCC8;
+            z-index: 0;
+            transform: translateY(-50%);
+        }
+        .progress-fill {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: 4px;
+            background: var(--secondary);
+            z-index: 0;
+            transform: translateY(-50%);
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+        .dot {
+            width: 14px;
+            height: 14px;
+            background: #D7CCC8;
+            border-radius: 50%;
+            z-index: 1;
+            transition: all 0.3s;
+            border: 2px solid var(--card-bg);
+        }
+        .dot.active {
+            background: var(--secondary);
+            transform: scale(1.3);
+            box-shadow: 0 0 5px var(--secondary);
+        }
+
+        /* 步驟卡片 */
+        .step-card {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+        .step-card.active {
+            display: block;
+        }
+
+        .icon-area {
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 70px;
+            margin-bottom: 10px;
+        }
+        
+        .icon-animate {
+            animation: bounce 2s infinite;
+        }
+
+        .step-title {
+            font-size: 1.5em;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .step-desc {
+            font-size: 1.1em;
+            line-height: 1.7;
+            background: #F5F5F5;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: left;
+            border-left: 5px solid var(--secondary);
+        }
+
+        .ingredient-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            text-align: left;
+            margin-top: 10px;
+            font-size: 0.95em;
+        }
+        .ing-item {
+            padding: 5px;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: 3px solid #4E342E;
+            border-radius: 10px;
+            padding: 10px 40px;
+            font-size: 1.2em;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #3E2723;
+            transition: all 0.1s;
+        }
+
+        button:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #3E2723;
+        }
+
+        .tips {
+            background: #FFF8E1;
+            color: #8D6E63;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .highlight {
+            color: #D32F2F;
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🍯 三層肉滷法 (甜麵醬版)</h1>
+    </div>
+
+    <div class="content">
+        <!-- 進度 -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-bg"></div>
+                <div class="progress-fill" id="progressFill"></div>
+                <div class="dot active" id="dot0"></div>
+                <div class="dot" id="dot1"></div>
+                <div class="dot" id="dot2"></div>
+                <div class="dot" id="dot3"></div>
+                <div class="dot" id="dot4"></div>
+                <div class="dot" id="dot5"></div>
+            </div>
+        </div>
+
+        <!-- 步驟 0: 食材 -->
+        <div class="step-card active" id="step0">
+            <div class="icon-area">🛒</div>
+            <div class="step-title">準備食材</div>
+            <div class="step-desc">
+                <div class="ingredient-list">
+                    <div class="ing-item">🥩 <strong>三層肉</strong> 2斤 (切條)</div>
+                    <div class="ing-item">🍯 <strong>甜麵醬</strong> 3匙 (靈魂)</div>
+                    <div class="ing-item">🍶 醬油 0.5杯 + 蠔油 1匙</div>
+                    <div class="ing-item">🍷 米酒 0.5杯</div>
+                    <div class="ing-item">🧄 薑片、大蒜 6-7粒</div>
+                    <div class="ing-item">🧅 蔥絲 1/3條、辣椒</div>
+                    <div class="ing-item">🥡 滷包 1包</div>
+                    <div class="ing-item">🌿 巴西里香粉 少許</div>
+                </div>
+                <div class="tips">💡 肉要先川燙，並用紙巾吸乾水份喔！</div>
+            </div>
+        </div>
+
+        <!-- 步驟 1: 煎肉 -->
+        <div class="step-card" id="step1">
+            <div class="icon-area icon-animate">🔥</div>
+            <div class="step-title">步驟 1：乾煎逼油</div>
+            <div class="step-desc">
+                <p>煎鍋燒熱，<strong>不放油！</strong></p>
+                <p>直接將三層肉下鍋煎。</p>
+                <p>目標：雙面表皮呈現<span class="highlight">金黃色</span>，把多餘油脂逼出來。</p>
+                <p>煎好後，把肉夾到「悶鍋」裡。</p>
+            </div>
+        </div>
+
+        <!-- 步驟 2: 爆香 -->
+        <div class="step-card" id="step2">
+            <div class="icon-area">🧄</div>
+            <div class="step-title">步驟 2：利用豬油爆香</div>
+            <div class="step-desc">
+                <p>不用洗鍋子！利用剛剛煎肉逼出的豬油。</p>
+                <p>開小火，放入 <strong>薑片、大蒜</strong>。</p>
+                <p>煎出香味後，全部倒入悶鍋的肉上面。</p>
+            </div>
+        </div>
+
+        <!-- 步驟 3: 調醬 -->
+        <div class="step-card" id="step3">
+            <div class="icon-area">🏺</div>
+            <div class="step-title">步驟 3：調配滷汁</div>
+            <div class="step-desc">
+                <p>在悶鍋中加入以下調料：</p>
+                <ul>
+                    <li>醬油 (0.5杯)</li>
+                    <li><strong>甜麵醬 (3匙)</strong></li>
+                    <li>蠔油、滷包、辣椒、蔥絲</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 步驟 4: 洗鍋水 -->
+        <div class="step-card" id="step4">
+            <div class="icon-area">💧</div>
+            <div class="step-title">步驟 4：精華洗鍋水</div>
+            <div class="step-desc">
+                <p>這步很關鍵！</p>
+                <p>在剛剛煎過肉跟香料的「煎鍋」裡，倒入熱開水搖一搖。</p>
+                <p>把這些帶有焦香的「洗鍋水」也倒入悶鍋。</p>
+                <p>(先加米酒稍微煮1分鐘去腥)</p>
+            </div>
+        </div>
+
+        <!-- 步驟 5: 悶煮 -->
+        <div class="step-card" id="step5">
+            <div class="icon-area icon-animate">🍲</div>
+            <div class="step-title">步驟 5：悶煮入味</div>
+            <div class="step-desc">
+                <p>1. 再加入1米杯水 (水量蓋過肉)。</p>
+                <p>2. 撒上少許 <span class="highlight">巴西里香粉</span>。</p>
+                <p>3. 蓋上鍋蓋，設定 <strong>20 分鐘</strong>。</p>
+                <div class="tips">👂 聽到悶鍋發出「唧唧聲」記得轉小火！</div>
+                <p style="margin-top:10px;">時間到開蓋翻動，再煮2-3分鐘收汁即完成！</p>
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <button onclick="nextStep()" id="btnAction">開始料理！ ➤</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentStep = 0;
+    const totalSteps = 6;
+
+    function updateProgress() {
+        const fillPercent = (currentStep / (totalSteps - 1)) * 100;
+        document.getElementById('progressFill').style.width = fillPercent + '%';
+        
+        for(let i=0; i<totalSteps; i++) {
+            const dot = document.getElementById(`dot${i}`);
+            if (i <= currentStep) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        }
+    }
+
+    function nextStep() {
+        document.getElementById(`step${currentStep}`).classList.remove('active');
+        
+        currentStep++;
+        
+        if (currentStep >= totalSteps) {
+            currentStep = 0;
+            document.getElementById('btnAction').innerText = "開始料理！ ➤";
+        } else {
+            if (currentStep === totalSteps - 1) {
+                document.getElementById('btnAction').innerText = "大功告成 ↻";
+            } else {
+                document.getElementById('btnAction').innerText = "下一步 ➤";
+            }
+        }
+
+        document.getElementById(`step${currentStep}`).classList.add('active');
+        updateProgress();
+    }
+</script>
+
+</body>
+</html>
