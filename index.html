@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美味大冒險 - 私房食譜全集</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap');
+
+        :root {
+            --bg-color: #FFF8E1;
+            --card-bg: #ffffff;
+            --text-color: #4E342E;
+            --hover-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-image: radial-gradient(#E0E0E0 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .header {
+            background: #FF7043;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: 0 4px 0 #D84315;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            margin-top: 10px;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px 40px 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* 食譜卡片連結 */
+        .recipe-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            text-decoration: none;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 3px solid #eee;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--hover-shadow);
+            border-color: #FF7043;
+        }
+
+        .icon {
+            font-size: 80px;
+            margin-bottom: 15px;
+            transition: transform 0.3s;
+        }
+
+        .recipe-card:hover .icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .desc {
+            font-size: 0.95em;
+            color: #666;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .tag {
+            margin-top: 15px;
+            font-size: 0.8em;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* 個別卡片配色 */
+        .tag.pork { background: #FFEBEE; color: #C62828; }
+        .tag.soup { background: #E8F5E9; color: #2E7D32; }
+        .tag.curry { background: #FFF8E1; color: #F57F17; }
+        .tag.beef { background: #ECEFF1; color: #37474F; }
+
+        /* 頁尾 */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>👨‍🍳 美味大冒險</h1>
+        <p>私房手寫食譜・數位互動版</p>
+    </div>
+
+    <div class="container">
+        <div class="grid">
+            
+            <!-- 梅干扣肉 -->
+            <a href="meiganpork.html" class="recipe-card">
+                <div class="icon">🥘</div>
+                <div class="title">梅干扣肉</div>
+                <div class="desc">經典客家風味，三層肉與梅干菜的完美結合，超下飯！</div>
+                <div class="tag pork">豬肉料理</div>
+            </a>
+
+            <!-- 剝皮辣椒雞湯 -->
+            <a href="chillychickensoup.html" class="recipe-card">
+                <div class="icon">🌶️</div>
+                <div class="title">剝皮辣椒雞湯</div>
+                <div class="desc">甘甜微辣，使用快鍋燉煮，湯頭濃郁暖胃。</div>
+                <div class="tag soup">暖心湯品</div>
+            </a>
+
+            <!-- 特製咖哩 (連結到 curry2.html) -->
+            <a href="curry2.html" class="recipe-card">
+                <div class="icon">🍛</div>
+                <div class="title">特製秘方咖哩</div>
+                <div class="desc">加入地瓜泥、可可粉與奶油的獨家秘方，濃郁滑順。</div>
+                <div class="tag curry">異國風味</div>
+            </a>
+
+            <!-- 甜麵醬滷肉 -->
+            <a href="3layerpork.html" class="recipe-card">
+                <div class="icon">🍖</div>
+                <div class="title">甜麵醬滷肉</div>
+                <div class="desc">使用甜麵醬與洗鍋水精華，色澤紅亮、醬香十足。</div>
+                <div class="tag pork">豬肉料理</div>
+            </a>
+
+            <!-- 泰式打拋豬 -->
+            <a href="dapoupork.html" class="recipe-card">
+                <div class="icon">🌿</div>
+                <div class="title">泰式打拋豬</div>
+                <div class="desc">九層塔與檸檬的清香，酸辣開胃，白飯殺手。</div>
+                <div class="tag pork">異國風味</div>
+            </a>
+
+            <!-- 紅酒燉牛肉 -->
+            <a href="winebeef.html" class="recipe-card">
+                <div class="icon">🍷</div>
+                <div class="title">紅酒燉牛肉</div>
+                <div class="desc">半瓶紅酒豪邁入鍋，法式小酒館的經典美味。</div>
+                <div class="tag beef">牛肉料理</div>
+            </a>
+
+            <!-- 魷魚螺肉蒜 -->
+            <a href="squidsoup.html" class="recipe-card">
+                <div class="icon">🦑</div>
+                <div class="title">魷魚螺肉蒜</div>
+                <div class="desc">經典台式酒家菜，乾魷魚與螺肉罐頭的鮮甜碰撞。</div>
+                <div class="tag soup">台式經典</div>
+            </a>
+
+        </div>
+
+        <div class="footer">
+            Made with ❤️ for cooking lovers.
+        </div>
+    </div>
+
+</body>
+</html>
